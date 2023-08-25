@@ -31,3 +31,5 @@ Generally, we use this structure:
   - _Scripts
   - _Sounds
   - _Sprites
+
+### Feel free to use the CreateFolders menu to automate this process

@@ -37,7 +37,7 @@ namespace Capriccioso
 
             CLogger.Instance.LogInfo("Building Server (Windows)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
-            CLogger.Instance.LogSuccess("Buildt Server (Windows)...");
+            CLogger.Instance.LogSuccess("Built Server (Windows)...");
         }
 
         [MenuItem("Build/Build Server (Linux)")]
