@@ -5,10 +5,16 @@ using UnityEngine;
 
 namespace Capriccioso
 {
+    /// <summary>
+    /// The build menu for the project -- contains all the build options, no need to switch between platforms (but please test for different platforms first!)
+    /// </summary>
     public class BuildScript
     {
         
         [MenuItem("Build/Build All")]
+        /// <summary>
+        /// Builds all the builds
+        /// </summary>
         public static void BuildAll()
         {
             BuildWindowsServer();
@@ -18,6 +24,9 @@ namespace Capriccioso
         }
 
         [MenuItem("Build/Build Server (Windows)")]
+        /// <summary>
+        /// Builds the server for Windows
+        /// </summary>
         public static void BuildWindowsServer()
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
@@ -32,6 +41,9 @@ namespace Capriccioso
         }
 
         [MenuItem("Build/Build Server (Linux)")]
+        /// <summary>
+        /// Builds the server for Linux
+        /// </summary>
         public static void BuildLinuxServer()
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
@@ -46,6 +58,9 @@ namespace Capriccioso
         }
 
         [MenuItem("Build/Build Client (Windows)")]
+        /// <summary>
+        /// Builds the client for Windows
+        /// </summary>
         public static void BuildWindowsClient()
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
@@ -59,7 +74,11 @@ namespace Capriccioso
             CLogger.Instance.LogSuccess("Built Client (Windows).");
         }
 
+
         [MenuItem("Build/Build Client (HTML5)")]
+        /// <summary>
+        /// Builds the client for WebGL
+        /// </summary>
         public static void BuildWebClient()
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
