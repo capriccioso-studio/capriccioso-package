@@ -21,6 +21,10 @@ namespace Capriccioso
 
         #region Properties
 
+        /// <summary>
+        /// Instance of this singleton class
+        /// </summary>
+        /// <value></value>
         public static T Instance
         {
             get

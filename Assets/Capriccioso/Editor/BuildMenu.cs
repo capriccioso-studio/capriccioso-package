@@ -27,9 +27,9 @@ namespace Capriccioso
             buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC | BuildOptions.EnableHeadlessMode;
 
-            CapLog.Instance.LogInfo("Building Server (Windows)...");
+            CLogger.Instance.LogInfo("Building Server (Windows)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
-            CapLog.Instance.LogSuccess("Buildt Server (Windows)...");
+            CLogger.Instance.LogSuccess("Buildt Server (Windows)...");
         }
 
         [MenuItem("Build/Build Server (Linux)")]
@@ -42,9 +42,9 @@ namespace Capriccioso
             buildPlayerOptions.target = BuildTarget.StandaloneLinux64;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC | BuildOptions.EnableHeadlessMode;
 
-            CapLog.Instance.LogInfo("Building Server (Linux)...");
+            CLogger.Instance.LogInfo("Building Server (Linux)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
-            CapLog.Instance.LogSuccess("Built Server (Linux).");
+            CLogger.Instance.LogSuccess("Built Server (Linux).");
         }
 
         [MenuItem("Build/Build Client (Windows)")]
@@ -57,9 +57,9 @@ namespace Capriccioso
             buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
 
-            CapLog.Instance.LogInfo("Building Client (Windows)...");
+            CLogger.Instance.LogInfo("Building Client (Windows)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
-            CapLog.Instance.LogSuccess("Built Client (Windows).");
+            CLogger.Instance.LogSuccess("Built Client (Windows).");
         }
 
         [MenuItem("Build/Build Client (HTML5)")]
@@ -72,9 +72,9 @@ namespace Capriccioso
             buildPlayerOptions.target = BuildTarget.WebGL;
             buildPlayerOptions.options = BuildOptions.CompressWithLz4HC;
 
-            CapLog.Instance.LogInfo("Building Client (Web)...");
+            CLogger.Instance.LogInfo("Building Client (Web)...");
             BuildPipeline.BuildPlayer(buildPlayerOptions);
-            CapLog.Instance.LogSuccess("Built Client (Web).");
+            CLogger.Instance.LogSuccess("Built Client (Web).");
         }
     }
 }
