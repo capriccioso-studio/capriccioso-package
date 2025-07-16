@@ -1,0 +1,62 @@
+name: Actions 😎
+
+on:
+  push:
+    branches:
+      - feature/build-automation-dev
+  pull_request:
+    branches:
+      - feature/build-automation-dev
+
+jobs:
+  build:
+    runs-on: windows-latest
+    environment: dev
+    timeout-minutes: 60
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+        #   fetch-depth: 0
+      
+      # Clear package cache to prevent corrupted shader files
+      - name: Clear Unity Package Cache
+        run: |
+          echo "Clearing Unity package cache..."
+          $packageCache = "$env:APPDATA\Unity\Asset Store-5.x"
+          if (Test-Path $packageCache) {
+            Remove-Item -Recurse -Force $packageCache
+            echo "Asset Store cache cleared"
+          }
+          $localPackageCache = "$env:LOCALAPPDATA\Unity\cache"
+          if (Test-Path $localPackageCache) {
+            Remove-Item -Recurse -Force $localPackageCache
+            echo "Local package cache cleared"
+          }
+        shell: powershell
+
+      - name: Build project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          # Increase memory limits for shader compilation
+          UNITY_SHADER_COMPILER_TASK_MEMORY_LIMIT: 4096
+        with:
+          targetPlatform: StandaloneWindows64
+          unityVersion: 6000.1.7f1
+          customParameters: '-quit -batchmode -nographics -logFile build.log -stackTraceLogType Full'
+          
+      # Upload build logs for debugging if build fails
+      - name: Upload Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build.log
+            Logs/
+          retention-days: 5
+
