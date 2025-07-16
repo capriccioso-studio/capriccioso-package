@@ -8,10 +8,8 @@ namespace Capriccioso
     public class BuildService : MonoSingleton<BuildService>
     {
 		[Tooltip("The path where the builds will be stored")]
-        public string BuildPath = "Builds";
-
-		[Tooltip("The scenes that will be built")]
-        public string[] Scenes = new string[] {"Assets/_Scenes/Main.unity"};
+        public string BuildPath = "Builds";        [Tooltip("The scenes that will be built")]
+        public string[] Scenes = new string[] {};
 
 		[Tooltip("The version of the build. Should be MAJOR_MINOR_PATCH")]
         public string Version = "0_0_1";
