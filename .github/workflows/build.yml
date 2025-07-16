@@ -20,22 +20,6 @@ jobs:
           lfs: true
         #   fetch-depth: 0
       
-      # Clear package cache to prevent corrupted shader files
-      - name: Clear Unity Package Cache
-        run: |
-          echo "Clearing Unity package cache..."
-          $packageCache = "$env:APPDATA\Unity\Asset Store-5.x"
-          if (Test-Path $packageCache) {
-            Remove-Item -Recurse -Force $packageCache
-            echo "Asset Store cache cleared"
-          }
-          $localPackageCache = "$env:LOCALAPPDATA\Unity\cache"
-          if (Test-Path $localPackageCache) {
-            Remove-Item -Recurse -Force $localPackageCache
-            echo "Local package cache cleared"
-          }
-        shell: powershell
-
       - name: Build project
         uses: game-ci/unity-builder@v4
         env:
