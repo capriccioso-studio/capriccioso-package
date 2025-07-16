@@ -3,10 +3,10 @@ name: Actions 😎
 on:
   push:
     branches:
-      - feature/build-automation-dev
+      - main
   pull_request:
     branches:
-      - feature/build-automation-dev
+      - main
 
 jobs:
   build:
