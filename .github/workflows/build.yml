@@ -31,7 +31,7 @@ jobs:
         with:
           targetPlatform: StandaloneWindows64
           unityVersion: 6000.1.7f1
-          customParameters: '-quit -batchmode -nographics -logFile build.log -stackTraceLogType Full'
+          customParameters: '-nographics -logFile build.log -stackTraceLogType Full'
           
       # Upload build logs for debugging if build fails
       - name: Upload Build Logs
