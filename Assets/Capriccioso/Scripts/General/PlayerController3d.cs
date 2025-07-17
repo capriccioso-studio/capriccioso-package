@@ -131,12 +131,12 @@ public class PlayerController3d : MonoBehaviour {
         _currentWalkingPenalty = Mathf.Clamp(_currentWalkingPenalty, _maxWalkingPenalty, 1);
 
         // Set current y vel and add walking penalty
-        var targetVel = new Vector3(normalizedDir.x, _rb.linearVelocity.y, normalizedDir.z) * _currentWalkingPenalty * _walkSpeed;
+        var targetVel = new Vector3(normalizedDir.x, _rb.velocity.y, normalizedDir.z) * _currentWalkingPenalty * _walkSpeed;
 
         // Set vel
-        var idealVel = new Vector3(targetVel.x, _rb.linearVelocity.y, targetVel.z);
+        var idealVel = new Vector3(targetVel.x, _rb.velocity.y, targetVel.z);
 
-        _rb.linearVelocity = Vector3.MoveTowards(_rb.linearVelocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
+        _rb.velocity = Vector3.MoveTowards(_rb.velocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
 
         _anim.SetBool("Walking", _dir != Vector3.zero && IsGrounded);
     }
@@ -171,12 +171,12 @@ public class PlayerController3d : MonoBehaviour {
                 if (GetWallHit(out var wallHit)) ExecuteJump(new Vector3(wallHit.normal.x * _jumpForce, _jumpForce, wallHit.normal.z * _jumpForce)); // Wall jump
             }
             else if (IsGrounded || Time.time < _timeLeftGrounded + _coyoteTime || _enableDoubleJump && !_hasDoubleJumped) {
-                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_rb.linearVelocity.x, _jumpForce), _hasJumped); // Ground jump
+                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_rb.velocity.x, _jumpForce), _hasJumped); // Ground jump
             }
         }
 
         void ExecuteJump(Vector3 dir, bool doubleJump = false) {
-            _rb.linearVelocity = dir;
+            _rb.velocity = dir;
 
 
 
@@ -188,12 +188,12 @@ public class PlayerController3d : MonoBehaviour {
             if(_jumpLaunchPoof is null)
                 return;
                 
-            _jumpLaunchPoof.up = _rb.linearVelocity;
+            _jumpLaunchPoof.up = _rb.velocity;
         }
 
         // Fall faster and allow small jumps. _jumpVelocityFalloff is the point at which we start adding extra gravity. Using 0 causes floating
-        if (_rb.linearVelocity.y < _jumpVelocityFalloff || _rb.linearVelocity.y > 0 && !Input.GetButton("Fire2"))
-            _rb.linearVelocity += _fallMultiplier * Physics.gravity.y * Vector3.up * Time.deltaTime;
+        if (_rb.velocity.y < _jumpVelocityFalloff || _rb.velocity.y > 0 && !Input.GetButton("Fire2"))
+            _rb.velocity += _fallMultiplier * Physics.gravity.y * Vector3.up * Time.deltaTime;
     }
 
     #endregion
@@ -229,8 +229,8 @@ public class PlayerController3d : MonoBehaviour {
         }
 
         if (_wallSliding) // Don't add sliding until actually falling or it'll prevent jumping against a wall
-            if (_rb.linearVelocity.y < 0)
-                _rb.linearVelocity = new Vector3(0, -_slideSpeed);
+            if (_rb.velocity.y < 0)
+                _rb.velocity = new Vector3(0, -_slideSpeed);
     }
 
     private bool GetWallHit(out RaycastHit outHit) {
@@ -267,7 +267,7 @@ public class PlayerController3d : MonoBehaviour {
             _wallGrabParticles.Stop();
         }
 
-        if (_grabbing) _rb.linearVelocity = new Vector3(0, _inputs.RawZ * _slideSpeed * (_inputs.RawZ < 0 ? 1 : 0.8f));
+        if (_grabbing) _rb.velocity = new Vector3(0, _inputs.RawZ * _slideSpeed * (_inputs.RawZ < 0 ? 1 : 0.8f));
 
         _anim.SetBool("Climbing", _wallSliding || _grabbing);
     }
@@ -327,13 +327,13 @@ public class PlayerController3d : MonoBehaviour {
         }
 
         if (_dashing) {
-            _rb.linearVelocity = _dashDir * _dashSpeed;
+            _rb.velocity = _dashDir * _dashSpeed;
 
             if (Time.time >= _timeStartedDash + _dashLength && !_dashingToTarget) {
                 _dashParticles.Stop();
                 _dashing = false;
                 // Clamp the velocity so they don't keep shooting off
-                _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, _rb.linearVelocity.y > 3 ? 3 : _rb.linearVelocity.y);
+                _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y > 3 ? 3 : _rb.velocity.y);
                 _rb.useGravity = true;
                 if (IsGrounded) _hasDashed = false;
                 _dashVisual.Stop();

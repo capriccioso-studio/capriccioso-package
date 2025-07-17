@@ -133,20 +133,20 @@ public class PlayerController2d : MonoBehaviour {
         var acceleration = IsGrounded ? _acceleration : _acceleration * 0.5f;
 
         if (Input.GetKey(KeyCode.LeftArrow)) {
-            if (_rb.linearVelocity.x > 0) _inputs.X = 0; // Immediate stop and turn. Just feels better
+            if (_rb.velocity.x > 0) _inputs.X = 0; // Immediate stop and turn. Just feels better
             _inputs.X = Mathf.MoveTowards(_inputs.X, -1, acceleration * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.RightArrow)) {
-            if (_rb.linearVelocity.x < 0) _inputs.X = 0;
+            if (_rb.velocity.x < 0) _inputs.X = 0;
             _inputs.X = Mathf.MoveTowards(_inputs.X, 1, acceleration * Time.deltaTime);
         }
         else {
             _inputs.X = Mathf.MoveTowards(_inputs.X, 0, acceleration * 2 * Time.deltaTime);
         }
 
-        var idealVel = new Vector3(_inputs.X * _walkSpeed, _rb.linearVelocity.y);
+        var idealVel = new Vector3(_inputs.X * _walkSpeed, _rb.velocity.y);
         // _currentMovementLerpSpeed should be set to something crazy high to be effectively instant. But slowed down after a wall jump and slowly released
-        _rb.linearVelocity = Vector3.MoveTowards(_rb.linearVelocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
+        _rb.velocity = Vector3.MoveTowards(_rb.velocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
 
         _anim.SetBool("Walking", _inputs.RawX != 0 && IsGrounded);
     }
@@ -181,13 +181,13 @@ public class PlayerController2d : MonoBehaviour {
                 ExecuteJump(new Vector2(_isAgainstLeftWall ? _jumpForce : -_jumpForce, _jumpForce)); // Wall jump
             }
             else if (IsGrounded || Time.time < _timeLeftGrounded + _coyoteTime || _enableDoubleJump && !_hasDoubleJumped) {
-                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_rb.linearVelocity.x, _jumpForce), _hasJumped); // Ground jump
+                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_rb.velocity.x, _jumpForce), _hasJumped); // Ground jump
             }
         }
 
         void ExecuteJump(Vector3 dir, bool doubleJump = false) {
-            _rb.linearVelocity = dir;
-            _jumpLaunchPoof.up = _rb.linearVelocity;
+            _rb.velocity = dir;
+            _jumpLaunchPoof.up = _rb.velocity;
             _jumpParticles.Play();
             _anim.SetTrigger(doubleJump ? "DoubleJump" : "Jump");
             _hasDoubleJumped = doubleJump;
@@ -195,8 +195,8 @@ public class PlayerController2d : MonoBehaviour {
         }
 
         // Fall faster and allow small jumps. _jumpVelocityFalloff is the point at which we start adding extra gravity. Using 0 causes floating
-        if (_rb.linearVelocity.y < _jumpVelocityFalloff || _rb.linearVelocity.y > 0 && !Input.GetKey(KeyCode.C))
-            _rb.linearVelocity += _fallMultiplier * Physics.gravity.y * Vector3.up * Time.deltaTime;
+        if (_rb.velocity.y < _jumpVelocityFalloff || _rb.velocity.y > 0 && !Input.GetKey(KeyCode.C))
+            _rb.velocity += _fallMultiplier * Physics.gravity.y * Vector3.up * Time.deltaTime;
     }
 
     #endregion
@@ -222,7 +222,7 @@ public class PlayerController2d : MonoBehaviour {
             _wallSlideParticles.Play();
 
             // Don't add sliding until actually falling or it'll prevent jumping against a wall
-            if (_rb.linearVelocity.y < 0) _rb.linearVelocity = new Vector3(0, -_slideSpeed);
+            if (_rb.velocity.y < 0) _rb.velocity = new Vector3(0, -_slideSpeed);
         }
         else if (!sliding && _wallSliding && !_grabbing) {
             transform.SetParent(null);
@@ -267,7 +267,7 @@ public class PlayerController2d : MonoBehaviour {
             Debug.Log("stopped");
         }
 
-        if (_grabbing) _rb.linearVelocity = new Vector3(0, _inputs.RawY * _slideSpeed * (_inputs.RawY < 0 ? 1 : 0.8f));
+        if (_grabbing) _rb.velocity = new Vector3(0, _inputs.RawY * _slideSpeed * (_inputs.RawY < 0 ? 1 : 0.8f));
 
         _anim.SetBool("Climbing", _wallSliding || _grabbing);
     }
@@ -308,13 +308,13 @@ public class PlayerController2d : MonoBehaviour {
         }
 
         if (_dashing) {
-            _rb.linearVelocity = _dashDir * _dashSpeed;
+            _rb.velocity = _dashDir * _dashSpeed;
 
             if (Time.time >= _timeStartedDash + _dashLength) {
                 _dashParticles.Stop();
                 _dashing = false;
                 // Clamp the velocity so they don't keep shooting off
-                _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, _rb.linearVelocity.y > 3 ? 3 : _rb.linearVelocity.y);
+                _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y > 3 ? 3 : _rb.velocity.y);
                 _rb.useGravity = true;
                 if (IsGrounded) _hasDashed = false;
                 _dashVisual.Stop();
