@@ -30,7 +30,7 @@ jobs:
           UNITY_SHADER_COMPILER_TASK_MEMORY_LIMIT: 4096
         with:
           targetPlatform: StandaloneWindows64
-          # unityVersion: 6000.1.7f1
+          unityVersion: 6000.1.7f1
           customParameters: '-logFile build.log -stackTraceLogType Full'
           
       # Upload build logs for debugging if build fails

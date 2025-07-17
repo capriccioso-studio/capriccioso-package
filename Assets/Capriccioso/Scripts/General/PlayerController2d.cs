@@ -308,13 +308,13 @@ public class PlayerController2d : MonoBehaviour {
         }
 
         if (_dashing) {
-            _rb.velocity = _dashDir * _dashSpeed;
+            _rb.linearVelocity = _dashDir * _dashSpeed;
 
             if (Time.time >= _timeStartedDash + _dashLength) {
                 _dashParticles.Stop();
                 _dashing = false;
                 // Clamp the velocity so they don't keep shooting off
-                _rb.velocity = new Vector3(_rb.velocity.x, _rb.velocity.y > 3 ? 3 : _rb.velocity.y);
+                _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, _rb.linearVelocity.y > 3 ? 3 : _rb.linearVelocity.y);
                 _rb.useGravity = true;
                 if (IsGrounded) _hasDashed = false;
                 _dashVisual.Stop();
