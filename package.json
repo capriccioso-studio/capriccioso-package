@@ -1,0 +1,29 @@
+{
+    "name": "com.capriccioso.package",
+    "version": "1.0.0",
+    "displayName": "Capriccioso Core",
+    "description": "A comprehensive Unity starter package providing core utilities, logging, event systems, pooling, scene management, and debugging tools for rapid game development.",
+    "unity": "6000.0",
+    "unityRelease": "0f1",
+    "documentationUrl": "https://github.com/capriccioso-studio/capriccioso-package",
+    "changelogUrl": "https://github.com/capriccioso-studio/capriccioso-package/blob/main/CHANGELOG.md",
+    "licensesUrl": "https://github.com/capriccioso-studio/capriccioso-package/blob/main/LICENSE.md",
+    "keywords": [
+        "utility",
+        "singleton",
+        "logging",
+        "events",
+        "pooling",
+        "scene-management",
+        "debugging",
+        "bootstrap"
+    ],
+    "author": {
+        "name": "Capriccioso Studio",
+        "email": "contact@capriccioso.studio",
+        "url": "https://capriccioso.studio"
+    },
+    "type": "library",
+    "hideInEditor": false,
+    "samples": []
+}
