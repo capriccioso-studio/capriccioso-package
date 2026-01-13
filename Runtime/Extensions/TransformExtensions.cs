@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Extensions
 {
     /// <summary>
     /// Extension methods for Transform.

@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Diagnostics;
 using System.IO;
+using Capriccioso.Runtime.Core;
 
 namespace Capriccioso.Editor
 {

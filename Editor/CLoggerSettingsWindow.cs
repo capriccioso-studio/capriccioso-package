@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using Capriccioso.Runtime.Logging;
 
 namespace Capriccioso.Editor
 {

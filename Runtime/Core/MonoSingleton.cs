@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Core
 {
     /// <summary>
     /// Thread-safe singleton base class for MonoBehaviours.

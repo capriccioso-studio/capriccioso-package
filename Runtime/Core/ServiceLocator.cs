@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Capriccioso.Runtime.Logging;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Core
 {
     /// <summary>
     /// A simple service locator pattern implementation.

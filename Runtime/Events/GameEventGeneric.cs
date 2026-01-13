@@ -1,6 +1,7 @@
 using UnityEngine;
+using Capriccioso.Runtime.Logging;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Events
 {
     /// <summary>
     /// Generic GameEvent that carries data of type T.

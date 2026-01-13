@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Logging
 {
     /// <summary>
     /// ScriptableObject for configuring CLogger settings at runtime.

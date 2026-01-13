@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Capriccioso.Runtime.Logging;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Bootstrap
 {
     /// <summary>
     /// Scene-agnostic initialization system that ensures required services are loaded

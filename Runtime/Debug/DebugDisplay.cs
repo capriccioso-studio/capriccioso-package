@@ -1,7 +1,7 @@
 using System.Text;
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Debug
 {
     /// <summary>
     /// Runtime debug overlay displaying FPS, memory usage, and other metrics.

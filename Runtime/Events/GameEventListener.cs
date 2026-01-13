@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Events
 {
     /// <summary>
     /// Component that listens for a GameEvent and invokes a UnityEvent response.

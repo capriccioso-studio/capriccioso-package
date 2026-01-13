@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Extensions
 {
     /// <summary>
     /// Extension methods for collections (List, Array, IEnumerable).

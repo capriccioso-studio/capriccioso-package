@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Capriccioso.Runtime.Logging;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Events
 {
     /// <summary>
     /// ScriptableObject-based event for designer-friendly event workflows.

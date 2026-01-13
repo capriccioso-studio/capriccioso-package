@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Timing
 {
     /// <summary>
     /// Frame-independent countdown timer with callbacks.

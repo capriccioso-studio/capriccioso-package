@@ -1,9 +1,52 @@
 using System;
 using UnityEngine;
 using UnityEngine.Pool;
+using Capriccioso.Runtime.Core;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Pooling
 {
+    /// <summary>
+    /// Interface for poolable objects that need initialization and reset callbacks.
+    /// Implement this on MonoBehaviours or components that are pooled.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// public class Bullet : MonoBehaviour, IPoolable
+    /// {
+    ///     private Rigidbody _rb;
+    ///     private TrailRenderer _trail;
+    ///     
+    ///     public void OnSpawnFromPool()
+    ///     {
+    ///         // Called when retrieved from pool
+    ///         _rb.linearVelocity = Vector3.zero;
+    ///         _trail.Clear();
+    ///     }
+    ///     
+    ///     public void OnReturnToPool()
+    ///     {
+    ///         // Called when returned to pool
+    ///         _rb.linearVelocity = Vector3.zero;
+    ///         _rb.angularVelocity = Vector3.zero;
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
+    public interface IPoolable
+    {
+        /// <summary>
+        /// Called when the object is retrieved from the pool.
+        /// Use this to initialize/reset state for a new spawn.
+        /// </summary>
+        void OnSpawnFromPool();
+        
+        /// <summary>
+        /// Called when the object is returned to the pool.
+        /// Use this to clean up and reset state.
+        /// </summary>
+        void OnReturnToPool();
+    }
+
     /// <summary>
     /// Generic object pool wrapper around Unity's ObjectPool.
     /// Provides a simple interface for pooling GameObjects or regular objects.
@@ -141,6 +184,7 @@ namespace Capriccioso
 
     /// <summary>
     /// Specialized pool for GameObjects with common defaults.
+    /// Automatically calls IPoolable methods if the GameObject implements them.
     /// </summary>
     public class GameObjectPool : ObjectPool<GameObject>
     {
@@ -148,8 +192,8 @@ namespace Capriccioso
         /// Creates a new GameObject pool.
         /// </summary>
         /// <param name="createFunc">Function to create/instantiate GameObjects.</param>
-        /// <param name="actionOnGet">Called when a GameObject is retrieved (default: SetActive(true)).</param>
-        /// <param name="actionOnRelease">Called when a GameObject is returned (default: SetActive(false)).</param>
+        /// <param name="actionOnGet">Called when a GameObject is retrieved (default: SetActive(true) + IPoolable.OnSpawnFromPool).</param>
+        /// <param name="actionOnRelease">Called when a GameObject is returned (default: IPoolable.OnReturnToPool + SetActive(false)).</param>
         /// <param name="actionOnDestroy">Called when a GameObject is destroyed.</param>
         /// <param name="defaultCapacity">Initial pool capacity.</param>
         /// <param name="maxSize">Maximum pool size.</param>
@@ -162,13 +206,51 @@ namespace Capriccioso
             int maxSize = Constants.DefaultMaxPoolSize)
             : base(
                 createFunc: createFunc,
-                actionOnGet: actionOnGet ?? (go => go.SetActive(true)),
-                actionOnRelease: actionOnRelease ?? (go => go.SetActive(false)),
+                actionOnGet: actionOnGet ?? DefaultOnGet,
+                actionOnRelease: actionOnRelease ?? DefaultOnRelease,
                 actionOnDestroy: actionOnDestroy ?? (go => UnityEngine.Object.Destroy(go)),
                 collectionCheck: true,
                 defaultCapacity: defaultCapacity,
                 maxSize: maxSize)
         {
+        }
+        
+        private static void DefaultOnGet(GameObject go)
+        {
+            go.SetActive(true);
+            
+            // Call IPoolable.OnSpawnFromPool on all components that implement it
+            var poolables = go.GetComponentsInChildren<IPoolable>(true);
+            foreach (var poolable in poolables)
+            {
+                try
+                {
+                    poolable.OnSpawnFromPool();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[GameObjectPool] Error in OnSpawnFromPool: {ex}");
+                }
+            }
+        }
+        
+        private static void DefaultOnRelease(GameObject go)
+        {
+            // Call IPoolable.OnReturnToPool on all components that implement it
+            var poolables = go.GetComponentsInChildren<IPoolable>(true);
+            foreach (var poolable in poolables)
+            {
+                try
+                {
+                    poolable.OnReturnToPool();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[GameObjectPool] Error in OnReturnToPool: {ex}");
+                }
+            }
+            
+            go.SetActive(false);
         }
     }
 }

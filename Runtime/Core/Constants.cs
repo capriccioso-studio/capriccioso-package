@@ -1,6 +1,6 @@
 using System;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Core
 {
     /// <summary>
     /// Centralized constants for the Capriccioso package.

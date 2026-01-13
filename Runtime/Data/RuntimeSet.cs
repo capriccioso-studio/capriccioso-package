@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Data
 {
     /// <summary>
     /// ScriptableObject-based runtime collection for tracking active objects.

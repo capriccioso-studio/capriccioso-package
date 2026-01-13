@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Capriccioso.Runtime.Logging;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Events
 {
     /// <summary>
     /// Improved static event bus for decoupled communication between systems.
@@ -19,38 +20,41 @@ namespace Capriccioso
     ///     ScoreChanged
     /// }
     /// 
-    /// // Subscribe to an event
+    /// // Subscribe to an event (manual unsubscribe)
     /// EventBus.Subscribe(GameEventType.PlayerDied, OnPlayerDied);
     /// 
-    /// private void OnPlayerDied(object data)
+    /// // Subscribe with auto-dispose (recommended)
+    /// private EventSubscription _subscription;
+    /// 
+    /// void Start()
     /// {
-    ///     // data could be player info, death cause, etc.
-    ///     PlayerDeathData deathData = data as PlayerDeathData;
-    ///     Debug.Log($"Player died at {deathData.Position}");
+    ///     _subscription = EventBus.Subscribe(GameEventType.PlayerDied, OnPlayerDied);
     /// }
     /// 
-    /// // Publish an event
-    /// EventBus.Publish(GameEventType.PlayerDied, new PlayerDeathData 
-    /// { 
-    ///     Position = transform.position,
-    ///     Cause = "Enemy Attack"
-    /// });
-    /// 
-    /// // Unsubscribe when done (important to prevent memory leaks!)
-    /// private void OnDestroy()
+    /// void OnDestroy()
     /// {
-    ///     EventBus.Unsubscribe(GameEventType.PlayerDied, OnPlayerDied);
+    ///     _subscription?.Dispose(); // Automatically unsubscribes
     /// }
     /// 
-    /// // Type-safe event usage
-    /// EventBus.Subscribe&lt;ScoreChangedEvent&gt;(OnScoreChanged);
-    /// EventBus.Publish(new ScoreChangedEvent { NewScore = 100 });
+    /// // Type-safe events with auto-dispose
+    /// private EventSubscription _scoreSubscription;
+    /// 
+    /// void Start()
+    /// {
+    ///     _scoreSubscription = EventBus.Subscribe&lt;ScoreChangedEvent&gt;(OnScoreChanged);
+    /// }
     /// </code>
     /// </example>
     public static class EventBus
     {
         private static Dictionary<object, List<Delegate>> s_eventTable = new();
         private static readonly object s_lock = new();
+        
+        /// <summary>
+        /// Optional callback invoked when an event handler throws an exception.
+        /// If null, errors are logged via CLogger.LogError.
+        /// </summary>
+        public static Action<Exception, object> OnEventError { get; set; }
 
         /// <summary>
         /// Unity calls this when domain reloads to reset static fields.
@@ -63,6 +67,7 @@ namespace Capriccioso
             {
                 s_eventTable?.Clear();
                 s_eventTable = new Dictionary<object, List<Delegate>>();
+                OnEventError = null;
             }
         }
 
@@ -70,16 +75,18 @@ namespace Capriccioso
 
         /// <summary>
         /// Subscribes a listener to an event type.
+        /// Returns a disposable subscription for automatic cleanup.
         /// </summary>
         /// <typeparam name="TEnum">The enum type defining event types.</typeparam>
         /// <param name="eventType">The event type to subscribe to.</param>
         /// <param name="listener">The callback to invoke when the event is published.</param>
-        public static void Subscribe<TEnum>(TEnum eventType, Action<object> listener) where TEnum : Enum
+        /// <returns>An EventSubscription that can be disposed to unsubscribe.</returns>
+        public static EventSubscription Subscribe<TEnum>(TEnum eventType, Action<object> listener) where TEnum : Enum
         {
             if (listener == null)
             {
                 CLogger.LogWarning($"Attempted to subscribe null listener to event {eventType}");
-                return;
+                return null;
             }
 
             lock (s_lock)
@@ -95,6 +102,8 @@ namespace Capriccioso
                     listeners.Add(listener);
                 }
             }
+            
+            return new EventSubscription(() => Unsubscribe(eventType, listener));
         }
 
         /// <summary>
@@ -151,7 +160,7 @@ namespace Capriccioso
                 }
                 catch (Exception ex)
                 {
-                    CLogger.LogError($"Error in event handler for {eventType}: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                    HandleEventError(ex, eventType);
                 }
             }
         }
@@ -162,15 +171,17 @@ namespace Capriccioso
 
         /// <summary>
         /// Subscribes to a strongly-typed event.
+        /// Returns a disposable subscription for automatic cleanup.
         /// </summary>
         /// <typeparam name="T">The event data type.</typeparam>
         /// <param name="listener">The callback to invoke with the event data.</param>
-        public static void Subscribe<T>(Action<T> listener) where T : struct
+        /// <returns>An EventSubscription that can be disposed to unsubscribe.</returns>
+        public static EventSubscription Subscribe<T>(Action<T> listener) where T : struct
         {
             if (listener == null)
             {
                 CLogger.LogWarning($"Attempted to subscribe null listener to event {typeof(T).Name}");
-                return;
+                return null;
             }
 
             Type eventType = typeof(T);
@@ -188,6 +199,8 @@ namespace Capriccioso
                     listeners.Add(listener);
                 }
             }
+            
+            return new EventSubscription(() => Unsubscribe(listener));
         }
 
         /// <summary>
@@ -242,7 +255,7 @@ namespace Capriccioso
                 }
                 catch (Exception ex)
                 {
-                    CLogger.LogError($"Error in event handler for {eventType.Name}: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                    HandleEventError(ex, eventType);
                 }
             }
         }
@@ -306,7 +319,75 @@ namespace Capriccioso
             }
             return 0;
         }
+        
+        private static void HandleEventError(Exception ex, object eventType)
+        {
+            if (OnEventError != null)
+            {
+                try
+                {
+                    OnEventError.Invoke(ex, eventType);
+                }
+                catch
+                {
+                    // Prevent error handler from throwing
+                }
+            }
+            else
+            {
+                CLogger.LogError($"Error in event handler for {eventType}: {ex.Message}\nStack Trace: {ex.StackTrace}");
+            }
+        }
 
         #endregion
+    }
+    
+    /// <summary>
+    /// Represents a subscription to an event that can be disposed to unsubscribe.
+    /// Use this for automatic cleanup in OnDestroy or when the subscriber is no longer needed.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// public class PlayerUI : MonoBehaviour
+    /// {
+    ///     private EventSubscription _healthSubscription;
+    ///     private EventSubscription _scoreSubscription;
+    ///     
+    ///     private void Start()
+    ///     {
+    ///         _healthSubscription = EventBus.Subscribe&lt;HealthChangedEvent&gt;(OnHealthChanged);
+    ///         _scoreSubscription = EventBus.Subscribe(GameEvent.ScoreChanged, OnScoreChanged);
+    ///     }
+    ///     
+    ///     private void OnDestroy()
+    ///     {
+    ///         // Clean up subscriptions
+    ///         _healthSubscription?.Dispose();
+    ///         _scoreSubscription?.Dispose();
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
+    public sealed class EventSubscription : IDisposable
+    {
+        private Action _unsubscribeAction;
+        private bool _disposed;
+        
+        internal EventSubscription(Action unsubscribeAction)
+        {
+            _unsubscribeAction = unsubscribeAction;
+        }
+        
+        /// <summary>
+        /// Unsubscribes from the event. Safe to call multiple times.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            
+            _unsubscribeAction?.Invoke();
+            _unsubscribeAction = null;
+        }
     }
 }

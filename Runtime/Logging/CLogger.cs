@@ -3,8 +3,9 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using System;
 using Object = UnityEngine.Object;
+using Capriccioso.Runtime.Core;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Logging
 {
     /// <summary>
     /// Static colored logging utility for Capriccioso.

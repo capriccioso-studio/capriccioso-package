@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Timing
 {
     /// <summary>
     /// Simple cooldown tracker for abilities, actions, or rate limiting.

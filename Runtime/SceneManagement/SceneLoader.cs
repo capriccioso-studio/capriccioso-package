@@ -3,8 +3,10 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Capriccioso.Runtime.Core;
+using Capriccioso.Runtime.Logging;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.SceneManagement
 {
     /// <summary>
     /// Async scene loading utility with progress callbacks and transition support.

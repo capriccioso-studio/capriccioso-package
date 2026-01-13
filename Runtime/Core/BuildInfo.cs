@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Capriccioso
+namespace Capriccioso.Runtime.Core
 {
     /// <summary>
     /// Provides build version and timestamp information at runtime.
