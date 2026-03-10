@@ -55,20 +55,16 @@ We only **aim for asymptotic optimality** with structures designed to contain a 
 
 We **aim for theoretical correctness**. This includes avoiding race conditions with proper locking. In Unity, avoid `WaitForSeconds` or `Invoke` when possible. Anything waiting for a coroutine should be a callback or `Task`.
 
-## Asset Folder Structure
+## Asset Folder Structure (Recommended)
 
-We use underscores (`_`) to indicate internally-developed content, keeping project folders at the top of the Assets folder.
+> **Note:** This is a recommended convention, not a requirement. Teams may adopt their own folder structure based on project needs.
 
-### Structure
+Using underscores (`_`) for internally-developed content keeps project folders at the top of the Assets folder.
+
+### Example Structure
 
 ```
 Assets/
-├── _Animations/
-├── _Fonts/
-├── _Materials/
-├── _Prefabs/
-├── _Resources/
-├── _Scenes/
 ├── _Scripts/
 │   ├── Classes/
 │   ├── Data/
@@ -76,11 +72,12 @@ Assets/
 │   ├── Handlers/
 │   ├── Managers/
 │   └── Services/
-├── _Sounds/
-└── _Sprites/
+├── _Prefabs/
+├── _Scenes/
+└── ...
 ```
 
-> **Tip:** Use the **CreateFolders** menu in Unity (`Assets > Create Folders`) to generate this structure automatically.
+> **Tip:** The **CreateFolders** menu (`Assets > Create Folders`) can generate a starter structure.
 
 ---
 

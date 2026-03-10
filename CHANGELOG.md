@@ -5,56 +5,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-01-12
+---
+
+## [1.0.0] - 2026-03-10
 
 ### Added
+- **Core Systems**
+  - `MonoSingleton<T>` — Thread-safe singleton base class
+  - `ServiceLocator` — Interface-based service registration
+  - `Constants` — Centralized log colors and defaults
+  - `BuildInfo` — Runtime version information
 
-- **Core**
-  - `MonoSingleton<T>` - Thread-safe singleton base class for MonoBehaviours
-  - `Constants` - Centralized constants including log colors
-  - `ServiceLocator` - Service registration and resolution pattern
-  - `BuildInfo` - Runtime build version and timestamp information
+- **Event System**
+  - `EventBus` — Static pub/sub with auto-dispose subscriptions
+  - `GameEvent` — ScriptableObject-based events
+  - `GameEventListener` — Inspector-configurable event listeners
+  - `GameEvent<T>` — Generic typed events (Int, Float, String, Bool, Vector3)
 
-- **Logging**
-  - `CLogger` - Static colored logging utility with multiple log levels
-  - `CLoggerSettings` - ScriptableObject for runtime log configuration
+- **Pipeline System**
+  - `BrokerChain<T>` — Synchronous chain of responsibility
+  - `AsyncBrokerChain<T>` — Async variant with Task support
+  - `BrokerChainBuilder<T>` — Fluent builder pattern
+  - `BrokerChainRegistry` — Global chain registration
 
-- **Events**
-  - `EventBus` - Improved type-safe static event system
-  - `GameEvent` - ScriptableObject-based events for designer-friendly workflows
-  - `GameEventListener` - MonoBehaviour component to respond to GameEvents
-
-- **Pooling**
-  - `ObjectPool<T>` - Generic object pooling wrapper around Unity's ObjectPool
-
-- **Scene Management**
-  - `SceneLoader` - Async scene loading with progress callbacks and transition support
-
-- **Timing**
-  - `Timer` - Frame-independent countdown timer
-  - `Cooldown` - Reusable cooldown tracker
+- **Utilities**
+  - `ObjectPool<T>` — Generic object pooling
+  - `GameObjectPool` — GameObject-specific pooling with IPoolable
+  - `Timer` — Countdown timer with events
+  - `Cooldown` — Elapsed time tracking for abilities
+  - `CLogger` — Colored console logging
 
 - **Extensions**
-  - `VectorExtensions` - Vector2/Vector3 helper methods (With, Flat, etc.)
-  - `TransformExtensions` - Transform utilities (DestroyChildren, SetPositionX, etc.)
-  - `CollectionExtensions` - List/Array utilities (Shuffle, Random, IsNullOrEmpty)
+  - `VectorExtensions` — With*, Flat, Random, Clamp helpers
+  - `TransformExtensions` — Position/scale setters, child management
+  - `CollectionExtensions` — Random, shuffle, safe access
 
-- **Data**
-  - `RuntimeSet<T>` - ScriptableObject-based runtime collections
+- **Scene Management**
+  - `BootstrapLoader` — Scene-agnostic initialization
+  - `SceneLoader` — Async scene loading with progress
 
-- **Bootstrap**
-  - `BootstrapLoader` - Scene-agnostic initialization system
+- **Debug Tools**
+  - `DebugDisplay` — FPS/memory overlay
+  - `RuntimeSet<T>` — ScriptableObject-based collections
 
-- **Debugging**
-  - `DebugDisplay` - Runtime debug overlay (FPS counter, memory usage)
+- **Editor Tools**
+  - `CreateFoldersMenu` — Quick folder structure setup
+  - `CLoggerSettingsWindow` — Logger configuration
+  - `BuildInfoUpdater` — Auto-update build info
 
-- **Editor**
-  - `CLoggerSettingsWindow` - Editor window for configuring logger settings
-
-- **Documentation**
-  - Contribution guidelines
-  - Code style guidelines
-  - Commenting guidelines
-  - Logging guidelines
-  - Deployment guidelines
-  - Game versioning system
+### Documentation
+- README with Quick Start guide
+- ARCHITECTURE.md with layer hierarchy
+- SYSTEMS.md with consolidated system docs
+- CODE_STANDARDS.md with style guidelines
+- CONTRIBUTING.md with workflow guide
